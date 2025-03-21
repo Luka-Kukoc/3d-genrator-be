@@ -12,8 +12,8 @@ export class AppService {
   async scrape(url: string): Promise<Array<object>> {
     const productLinks = await this.linkScraperService.scrapeLinks(url);
     const productDetails = await Promise.all(
-      productLinks.map((link) =>
-        this.productScraperService.scrapeProductDetails(link),
+      productLinks.map((link, index) =>
+        this.productScraperService.scrapeProductDetails(link, index + 1),
       ),
     );
     return productDetails;

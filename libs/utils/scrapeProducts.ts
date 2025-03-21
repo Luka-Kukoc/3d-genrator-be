@@ -3,7 +3,7 @@ import axios from 'axios';
 import * as cheerio from 'cheerio';
 
 export class ProductScraperService {
-  async scrapeProductDetails(productUrl: string) {
+  async scrapeProductDetails(productUrl: string, index: number) {
     try {
       const { data } = await axios.get(productUrl, {
         headers: {
@@ -39,6 +39,7 @@ export class ProductScraperService {
       }
 
       return {
+        id: index,
         name: name || 'Not found',
         price: price || 'Not found',
         dimensions: dimensions || 'Not found',
