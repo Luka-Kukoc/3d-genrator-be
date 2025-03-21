@@ -2,8 +2,7 @@ import { Injectable } from '@nestjs/common';
 import axios from 'axios';
 import * as cheerio from 'cheerio';
 
-@Injectable()
-export class ImageScraperService {
+export class ProductScraperService {
   async scrapeProductDetails(productUrl: string) {
     try {
       const { data } = await axios.get(productUrl, {

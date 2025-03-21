@@ -1,8 +1,8 @@
-import { Controller, Get, Post, Body, Param } from '@nestjs/common';
+import { Controller, Post, Body } from '@nestjs/common';
 import { AppService } from './app.service';
-import { ApiParam, ApiBody, ApiTags } from '@nestjs/swagger';
+import { ApiBody, ApiTags } from '@nestjs/swagger';
 import { zodToOpenAPI } from 'nestjs-zod';
-import { ScrapeDto, scrapePostSchema, urlSchema } from 'libs/schemas';
+import { ScrapeDto, scrapePostSchema } from 'libs/schemas';
 
 @ApiTags('Service')
 @Controller()
@@ -11,9 +11,8 @@ export class AppController {
 
   @Post('/scrape')
   @ApiBody({ schema: zodToOpenAPI(scrapePostSchema) })
-  @ApiParam({ name: 'url', schema: zodToOpenAPI(urlSchema) })
-  scrape(@Body() categoryUrl: ScrapeDto): Array<object> {
-    return this.appService.scrape(categoryUrl.url);
+  async scrape(@Body() categoryUrl: ScrapeDto): Promise<Array<object>> {
+    return await this.appService.scrape(categoryUrl.url);
   }
 
   @Post('/save-products')
