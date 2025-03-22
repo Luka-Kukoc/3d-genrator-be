@@ -2,7 +2,7 @@ import { Controller, Post, Body } from '@nestjs/common';
 import { AppService } from './app.service';
 import { ApiBody, ApiTags } from '@nestjs/swagger';
 import { zodToOpenAPI } from 'nestjs-zod';
-import { ScrapeDto, scrapePostSchema } from 'libs/schemas';
+import { ScrapeDto, scrapePostSchema, saveProductsSchema } from 'libs/schemas';
 
 @ApiTags('Service')
 @Controller()
@@ -16,7 +16,18 @@ export class AppController {
   }
 
   @Post('/save-products')
-  saveProducts(): Array<object> {
-    return this.appService.saveProducts();
+  @ApiBody({ schema: zodToOpenAPI(saveProductsSchema) })
+  async saveProducts(
+    @Body()
+    products: Array<{
+      id: number;
+      name: string;
+      price: string;
+      dimensions: string;
+      imageUrl: string;
+      productUrl: string;
+    }>,
+  ): Promise<Array<object>> {
+    return await this.appService.saveProducts(products);
   }
 }
