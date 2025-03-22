@@ -19,7 +19,16 @@ export class AppService {
     return productDetails;
   }
 
-  saveProducts(): Array<object> {
-    return [];
+  async saveProducts(
+    products: Array<{
+      id: number;
+      name: string;
+      price: string;
+      dimensions: string;
+      imageUrl: string;
+      productUrl: string;
+    }>,
+  ): Promise<Array<object>> {
+    return products;
   }
 }
