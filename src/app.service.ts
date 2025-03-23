@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { LinkScraperService } from 'libs/utils/scrape';
+import { LinkScraperService } from 'libs/utils/scrapeLinks';
 import { ProductScraperService } from 'libs/utils/scrapeProducts';
 
 @Injectable()
