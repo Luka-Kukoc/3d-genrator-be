@@ -20,14 +20,13 @@ export class AppController {
   async saveProducts(
     @Body()
     products: Array<{
-      id: number;
       name: string;
-      price: string;
-      dimensions: string;
+      price: number;
+      dimension: string;
       imageUrl: string;
-      productUrl: string;
+      productLink: string;
     }>,
-  ): Promise<Array<object>> {
+  ): Promise<string> {
     return await this.appService.saveProducts(products);
   }
 }

@@ -16,9 +16,9 @@ export class ProductScraperService {
     }
   }
 
-  private async scrapeIkeaProduct(productUrl: string, index: number) {
+  private async scrapeIkeaProduct(productLink: string, index: number) {
     try {
-      const { data } = await axios.get(productUrl, {
+      const { data } = await axios.get(productLink, {
         headers: {
           'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)',
         },
@@ -29,16 +29,16 @@ export class ProductScraperService {
       let name = $('.pip-header-section__title--big').first().text().trim();
       if (!name) name = 'none';
 
-      let price = $('.pip-price__integer').first().text().trim();
-      if (!price) price = 'none';
+      let price = Number($('.pip-price__integer').first().text().trim());
+      if (!price) price = 0;
 
-      let dimensions = $(
+      let dimension = $(
         '.pip-link-button.pip-header-section__description-measurement',
       )
         .first()
         .text()
         .trim();
-      if (!dimensions) dimensions = 'none';
+      if (!dimension) dimension = 'none';
 
       let imageUrl = $('.pip-image').first().attr('src');
       if (!imageUrl) imageUrl = 'none';
@@ -47,9 +47,9 @@ export class ProductScraperService {
         id: index,
         name,
         price,
-        dimensions,
+        dimension,
         imageUrl,
-        productUrl,
+        productLink,
       };
     } catch (error) {
       console.error(`Error scraping IKEA product: ${error.message}`);
