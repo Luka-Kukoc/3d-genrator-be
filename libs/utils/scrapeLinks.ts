@@ -20,21 +20,14 @@ export class LinkScraperService {
       const $ = cheerio.load(data);
 
       let productLinks: string[] = [];
-      if (url.includes('ikea.com')) {
-        $(
-          '.plp-product-list__products .plp-fragment-wrapper .plp-product__image-link',
-        ).each((index, element) => {
-          const linkHref = $(element).attr('href');
-          if (linkHref) {
-            productLinks.push(new URL(linkHref, url).href);
-          }
-        });
-      } else if (url.includes('target.com')) {
-        productLinks = await scrapeTarget(url);
-      } else {
-        console.error(`Unsupported website: ${url}`);
-        return [];
-      }
+      $(
+        '.plp-product-list__products .plp-fragment-wrapper .plp-product__image-link',
+      ).each((index, element) => {
+        const linkHref = $(element).attr('href');
+        if (linkHref) {
+          productLinks.push(new URL(linkHref, url).href);
+        }
+      });
 
       return productLinks;
     } catch (error) {

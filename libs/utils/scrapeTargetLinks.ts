@@ -14,13 +14,40 @@ export async function scrapeTarget(url: string) {
     timeout: 30000,
   });
 
-  const productLinks = await page.evaluate(() => {
+  const products = await page.evaluate(() => {
     return Array.from(
-      document.querySelectorAll('[data-test="product-grid"] a[href*="/p/"]'),
-    ).map((a: any) => a.href);
+      document.querySelectorAll('.styles_ndsCol__MIQSp.styles_xs__jQ_Rd'),
+    ).map((product) => {
+      if (
+        product.querySelector('a')?.href &&
+        product.closest('[data-test="product-grid"]')?.querySelector('img')?.src
+      ) {
+        return {
+          name:
+            (product.querySelector('a') as HTMLElement)?.innerText.trim() ||
+            'none',
+          price: Number(
+            product
+              .querySelector('[data-test="current-price"]')
+              ?.textContent?.trim()
+              ?.split('$')[1]
+              ?.split(' -')[0] ||
+              product
+                .querySelector('[data-test="current-price"]')
+                ?.textContent?.trim() ||
+              0,
+          ),
+          productLink: product.querySelector('a')?.href,
+          dimension: 'none',
+          imageUrl:
+            product.closest('[data-test="product-grid"]')?.querySelector('img')
+              ?.src || null,
+        };
+      }
+    });
   });
 
   await browser.close();
 
-  return productLinks;
+  return products;
 }
