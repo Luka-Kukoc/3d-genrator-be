@@ -8,9 +8,8 @@ export const scrapePostSchema = z.object({
 });
 
 export const productSchema = z.object({
-  id: z.number(),
   name: z.string(),
-  price: z.string(),
+  price: z.number(),
   dimensions: z.string(),
   imageUrl: z.string(),
   productUrl: z.string(),

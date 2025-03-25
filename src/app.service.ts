@@ -1,6 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { LinkScraperService } from 'libs/utils/scrapeLinks';
 import { ProductScraperService } from 'libs/utils/scrapeProducts';
+import { PrismaClient } from '@prisma/client';
+
+const prisma = new PrismaClient();
 
 @Injectable()
 export class AppService {
@@ -21,14 +24,30 @@ export class AppService {
 
   async saveProducts(
     products: Array<{
-      id: number;
       name: string;
-      price: string;
-      dimensions: string;
+      price: number;
+      dimension: string;
       imageUrl: string;
-      productUrl: string;
+      productLink: string;
     }>,
-  ): Promise<Array<object>> {
-    return products;
+  ): Promise<string> {
+    for (const product of products) {
+      const existingProd = await prisma.product.findFirst({
+        where: { productLink: product.productLink },
+      });
+      //provjera da ne kreiramo za iste proizvode ponovo(url je unique)
+      if (!existingProd) {
+        await prisma.product.create({
+          data: {
+            ...product,
+            object3DLink: '',
+          },
+        });
+      }
+    }
+
+    //3d generation
+
+    return 'Success';
   }
 }
