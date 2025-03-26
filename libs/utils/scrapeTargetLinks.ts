@@ -15,36 +15,54 @@ export async function scrapeTarget(url: string) {
   });
 
   const products = await page.evaluate(() => {
+    const seenLinks = new Set();
+
     return Array.from(
       document.querySelectorAll('.styles_ndsCol__MIQSp.styles_xs__jQ_Rd'),
-    ).map((product) => {
-      if (
-        product.querySelector('a')?.href &&
-        product.closest('[data-test="product-grid"]')?.querySelector('img')?.src
-      ) {
+    )
+      .map((product, index) => {
+        const linkElement = product.querySelector('a[href*="/p/"]');
+        const imageElement = product.querySelector('picture img');
+
+        if (!linkElement || !imageElement) return null;
+
+        let productLink = linkElement.getAttribute('href');
+        if (!productLink) return null;
+        productLink = productLink.startsWith('http')
+          ? productLink
+          : 'https://www.target.com' + productLink;
+
+        if (seenLinks.has(productLink)) return null;
+        seenLinks.add(productLink);
+
+        let imageUrl = imageElement.getAttribute('src');
+        if (!imageUrl) {
+          const srcset = imageElement.getAttribute('srcset');
+          if (srcset) {
+            const srcsetArray = srcset
+              .split(',')
+              .map((s) => s.trim().split(' ')[0]);
+            imageUrl = srcsetArray[srcsetArray.length - 1];
+          }
+        }
+
         return {
+          id: index,
           name:
-            (product.querySelector('a') as HTMLElement)?.innerText.trim() ||
-            'none',
+            (product.querySelector('.styles_ndsTruncate__GRSDE') as HTMLElement)
+              ?.title || 'none',
           price: Number(
             product
               .querySelector('[data-test="current-price"]')
               ?.textContent?.trim()
-              ?.split('$')[1]
-              ?.split(' -')[0] ||
-              product
-                .querySelector('[data-test="current-price"]')
-                ?.textContent?.trim() ||
-              0,
+              ?.replace(/[^0-9.]/g, '') || 0,
           ),
-          productLink: product.querySelector('a')?.href,
+          productLink: 'www.target.com' + productLink,
           dimension: 'none',
-          imageUrl:
-            product.closest('[data-test="product-grid"]')?.querySelector('img')
-              ?.src || null,
+          imageUrl: imageUrl || null,
         };
-      }
-    });
+      })
+      .filter((product) => product !== null);
   });
 
   await browser.close();
