@@ -1,4 +1,4 @@
-import { Controller, Post, Body } from '@nestjs/common';
+import { Controller, Post, Body, Get, Query } from '@nestjs/common';
 import { AppService } from './app.service';
 import { ApiBody, ApiTags } from '@nestjs/swagger';
 import { zodToOpenAPI } from 'nestjs-zod';
@@ -48,5 +48,14 @@ export class AppController {
     const result = await this.appService.generateModel(url, dimensions);
 
     return result;
+  }
+  @Get('/products')
+  async getProducts(
+    @Query('page') page: string = '1',
+    @Query('limit') limit: string = '10',
+  ) {
+    const pageNumber = parseInt(page, 10) || 1;
+    const limitNumber = parseInt(limit, 10) || 10;
+    return await this.appService.getProducts(pageNumber, limitNumber);
   }
 }

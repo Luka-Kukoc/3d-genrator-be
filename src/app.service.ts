@@ -165,4 +165,21 @@ export class AppService {
       console.log(error);
     }
   }
+  async getProducts(page: number, limit: number) {
+    const skip = (page - 1) * limit;
+    const products = await prisma.product.findMany({
+      skip,
+      take: limit,
+    });
+
+    const totalProducts = await prisma.product.count();
+
+    return {
+      total: totalProducts,
+      page,
+      limit,
+      totalPages: Math.ceil(totalProducts / limit),
+      products,
+    };
+  }
 }
