@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { LinkScraperService } from 'libs/utils/scrapeLinks';
 import { ProductScraperService } from 'libs/utils/scrapeProducts';
 import { PrismaClient } from '@prisma/client';
+import { scrapeTarget } from 'libs/utils/scrapeTargetLinks';
 
 const prisma = new PrismaClient();
 
@@ -13,12 +14,19 @@ export class AppService {
   ) {}
 
   async scrape(url: string): Promise<Array<object>> {
-    const productLinks = await this.linkScraperService.scrapeLinks(url);
-    const productDetails = await Promise.all(
-      productLinks.map((link, index) =>
-        this.productScraperService.scrapeProductDetails(link, index + 1),
-      ),
-    );
+    let productLinks = [];
+    let productDetails = [];
+    if (url.includes('www.ikea')) {
+      productLinks = await this.linkScraperService.scrapeLinks(url);
+      productDetails = await Promise.all(
+        productLinks.map((link, index) =>
+          this.productScraperService.scrapeProductDetails(link, index + 1),
+        ),
+      );
+    } else {
+      productDetails = await scrapeTarget(url);
+    }
+
     return productDetails;
   }
 
