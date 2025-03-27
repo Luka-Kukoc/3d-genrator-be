@@ -1,7 +1,12 @@
 import { createZodDto } from 'nestjs-zod/dto';
-import z, { string } from 'zod';
+import z from 'zod';
 
 export const urlSchema = z.string();
+
+const dimensionsSchema = z.object({
+  width: z.number().positive(),
+  height: z.number().positive(),
+});
 
 export const scrapePostSchema = z.object({
   url: z.string(),
@@ -17,3 +22,10 @@ export const productSchema = z.object({
 
 export class ScrapeDto extends createZodDto(scrapePostSchema) {}
 export const saveProductsSchema = z.array(productSchema);
+
+export const generateModelPostSchema = z.object({
+  url: z.string(),
+  dimensions: dimensionsSchema,
+});
+
+export class GnerateModelDto extends createZodDto(generateModelPostSchema) {}
