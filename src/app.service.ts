@@ -135,6 +135,8 @@ export class AppService {
     rgbImageUrl: string,
     dimensions: Dimensions,
   ): Promise<object> {
+    //This solves open issue with gradio client import
+    //https://github.com/gradio-app/gradio/issues/4260
     const { Client, handle_file } = await importDynamic('@gradio/client');
     try {
       const client = await Client.connect(
