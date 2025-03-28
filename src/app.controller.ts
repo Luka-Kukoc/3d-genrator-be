@@ -2,7 +2,17 @@ import { Controller, Post, Body, Get, Query } from '@nestjs/common';
 import { AppService } from './app.service';
 import { ApiBody, ApiTags } from '@nestjs/swagger';
 import { zodToOpenAPI } from 'nestjs-zod';
-import { ScrapeDto, scrapePostSchema, saveProductsSchema } from 'libs/schemas';
+import {
+  ScrapeDto,
+  scrapePostSchema,
+  saveProductsSchema,
+  generateModelPostSchema,
+  GnerateModelDto,
+} from 'libs/schemas';
+export const importDynamic = new Function(
+  'modulePath',
+  'return import(modulePath)',
+);
 
 @ApiTags('Service')
 @Controller()
@@ -30,6 +40,15 @@ export class AppController {
     return await this.appService.saveProducts(products);
   }
 
+  @Post('/generate-model')
+  @ApiBody({ schema: zodToOpenAPI(generateModelPostSchema) })
+  async generateModel(
+    @Body() { url, dimensions }: GnerateModelDto,
+  ): Promise<object> {
+    const result = await this.appService.generateModel(url, dimensions);
+
+    return result;
+  }
   @Get('/products')
   async getProducts(
     @Query('page') page: string = '1',
